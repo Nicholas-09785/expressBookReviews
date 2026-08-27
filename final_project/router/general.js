@@ -66,7 +66,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
               if (Math.floor(isbn) == num)
                 resolve({ message: books[key].title });
             }
-            resolve({message: isbn});
+            resolve({message: "Book not found based on isbn"});
 
         }, 1000);
     }).then(data => {
@@ -116,10 +116,10 @@ function getTitle(req, res) {
       for (const key in books) {
         const bookTitle = books[key].title;
         if (bookTitle == title)
-          resolve({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
+          resolve({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews + ", ISBN: " + key + ", Title" + books[key].title});
       }
-      resolve({message: "Book not found based off author"});
-    }, 1000);
+      resolve([]);
+    }, 3000);
   });
 }
 
@@ -138,6 +138,8 @@ public_users.get('/title/:title', async (req, res) => {
 
   // With async-await:
   const title = await getTitle(req, res);
+  if (title.length === 0)
+    return res.status(401).json({message: "Did not find book title"}); // Message if book title not found
   res.json(title);
 });
 
@@ -150,7 +152,7 @@ public_users.get('/review/:isbn',function (req, res) {
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].review});
   }
-  return res.status(400).json({message: "Book isbn not found"});
+  return res.status(401).json({message: "Book isbn not found"});
 });
 
 module.exports.general = public_users;
