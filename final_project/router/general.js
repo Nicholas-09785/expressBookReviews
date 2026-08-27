@@ -7,7 +7,19 @@ const public_users = express.Router();
 
 public_users.post("/register", (req,res) => {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { username, password } = req.body;
+
+  if (username == password)
+    return res.status(300).json({message: "Username and passwords should not match"});
+
+  if (!isValid(username))
+    return res.status(300).json({message: "No spaces"});
+
+  if (users.includes[username])
+    return res.status(300).json({message: "Username taken"});
+
+  users.push({ username: username, password: password });
+  res.status(201).json({message: "Completed", username });
 });
 
 // Get the book list available in the shop
@@ -21,11 +33,11 @@ public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   for (const key in books) {
-    const num = books[key];
+    const num = key;
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].title});
   }
-  return res.status(300).json({message: JSON.stringify(isbn)});
+  return res.status(300).json({message: isbn});
  });
   
 // Get book details based on author
@@ -47,7 +59,7 @@ public_users.get('/title/:title',function (req, res) {
   for (const key in books) {
     const bookTitle = books[key].title;
     if (bookTitle == title)
-      return res.status(300).json({message: books[key].author});
+      return res.status(300).json({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
   }
   return res.status(404).json({message: "Book not found based off title"});
 });
@@ -57,7 +69,7 @@ public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
   for (const key in books) {
-    const num = books[key];
+    const num = key;
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].review});
   }
