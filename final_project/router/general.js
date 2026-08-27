@@ -10,13 +10,13 @@ public_users.post("/register", (req,res) => {
   const { username, password } = req.body;
 
   if (username == password)
-    return res.status(300).json({message: "Username and passwords should not match"});
+    return res.status(401).json({message: "Username and passwords should not match"});
 
   if (!isValid(username))
-    return res.status(300).json({message: "No spaces"});
+    return res.status(401).json({message: "No spaces"});
 
   if (users.includes[username])
-    return res.status(300).json({message: "Username taken"});
+    return res.status(401).json({message: "Username taken"});
 
   users.push({ username: username, password: password });
   res.status(201).json({message: "Completed", username });
@@ -55,7 +55,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].title});
   }
-  return res.status(300).json({message: isbn});*/
+  return res.status(400).json({message: "Book not found based on isbn"});*/
 
   // With promise
   new Promise((resolve, reject) => {
@@ -88,7 +88,7 @@ public_users.get('/author/:author',function (req, res) {
     if (authorPerson == author)
       return res.status(300).json({message: books[key].title});
   }
-  return res.status(404).json({message: "Book not found based off author"});*/
+  return res.status(401).json({message: "Book not found based off author"});*/
 
   // With promise
   new Promise((resolve, reject) => {
@@ -116,7 +116,7 @@ function getTitle(req, res) {
       for (const key in books) {
         const bookTitle = books[key].title;
         if (bookTitle == title)
-          return res.status(300).json({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
+          resolve({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
       }
       resolve({message: "Book not found based off author"});
     }, 1000);
@@ -134,7 +134,7 @@ public_users.get('/title/:title', async (req, res) => {
     if (bookTitle == title)
       return res.status(300).json({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
   }
-  return res.status(404).json({message: "Book not found based off title"});*/
+  return res.status(401).json({message: "Book not found based off title"});*/
 
   // With async-await:
   const title = await getTitle(req, res);
@@ -150,7 +150,7 @@ public_users.get('/review/:isbn',function (req, res) {
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].review});
   }
-  return res.status(300).json({message: JSON.stringify(review)});
+  return res.status(400).json({message: "Book isbn not found"});
 });
 
 module.exports.general = public_users;
