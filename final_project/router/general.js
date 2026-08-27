@@ -25,43 +25,120 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: JSON.stringify(books)});
+  
+  // Without promise:
+  // return res.status(300).json({message: JSON.stringify(books)});
+
+  // With promise:
+  new Promise((resolve, reject) => {
+        setTimeout(() => {
+            
+            resolve({ message: books });
+        }, 1000);
+    }).then(data => {
+      res.json(data);
+    }).catch(err => {
+      console.error("Data error: ", err);
+      res.status(500).json({ error: "Internal error" });
+    });
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
+  
+  // Without promise:
+  /*
   const isbn = req.params.isbn;
   for (const key in books) {
     const num = key;
     if (Math.floor(isbn) == num)
       return res.status(300).json({message: books[key].title});
   }
-  return res.status(300).json({message: isbn});
+  return res.status(300).json({message: isbn});*/
+
+  // With promise
+  new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const isbn = req.params.isbn;
+            for (const key in books) {
+              const num = key;
+              if (Math.floor(isbn) == num)
+                resolve({ message: books[key].title });
+            }
+            resolve({message: isbn});
+
+        }, 1000);
+    }).then(data => {
+      res.json(data);
+    }).catch(err => {
+      console.error("Data error: ", err);
+      res.status(500).json({ error: "Internal error" });
+    });
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
+  // Without promise:
+  /*
   const author = req.params.author;
   for (const key in books) {
     const authorPerson = books[key].author;
     if (authorPerson == author)
       return res.status(300).json({message: books[key].title});
   }
-  return res.status(404).json({message: "Book not found based off author"});
+  return res.status(404).json({message: "Book not found based off author"});*/
+
+  // With promise
+  new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const author = req.params.author;
+            for (const key in books) {
+              const authorPerson = books[key].author;
+              if (authorPerson == author)
+                resolve({message: books[key].title});
+            }
+            resolve({message: "Book not found based off author"});
+        }, 1000);
+    }).then(data => {
+      res.json(data);
+    }).catch(err => {
+      console.error("Data error: ", err);
+      res.status(500).json({ error: "Internal error" });
+    });
 });
 
+function getTitle(req, res) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const title = req.params.title;
+      for (const key in books) {
+        const bookTitle = books[key].title;
+        if (bookTitle == title)
+          return res.status(300).json({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
+      }
+      resolve({message: "Book not found based off author"});
+    }, 1000);
+  });
+}
+
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', async (req, res) => {
   //Write your code here
-  const title = req.params.title;
+
+  // Without async-await:
+  /*const title = req.params.title;
   for (const key in books) {
     const bookTitle = books[key].title;
     if (bookTitle == title)
       return res.status(300).json({message: "Author: " + books[key].author + ", Reviews: " + books[key].reviews});
   }
-  return res.status(404).json({message: "Book not found based off title"});
+  return res.status(404).json({message: "Book not found based off title"});*/
+
+  // With async-await:
+  const title = await getTitle(req, res);
+  res.json(title);
 });
 
 //  Get book review
