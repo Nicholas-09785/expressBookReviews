@@ -64,7 +64,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
             for (const key in books) {
               const num = key;
               if (Math.floor(isbn) == num)
-                resolve({ message: books[key].title });
+                resolve({ message: "Title: " + books[key].title + ", Author: " + books[key].author + ", Reviews: " + books[key].reviews });
             }
             resolve({message: "Book not found based on isbn"});
 
